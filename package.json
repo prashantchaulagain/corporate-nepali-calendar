@@ -1,6 +1,6 @@
 {
 	"name": "corporate-nepali-calendar",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"main": "dist/index.js",
 	"description": "Nepali Calendar utils with functions like date conversion with accurate date conversion from 2000 to 2099 B.S. ",
 	"scripts": {
@@ -14,7 +14,10 @@
 		"prepublishOnly": "npm run ci",
 		"ci": "npm run build && npm run check-format && npm run check-exports && npm run test"
 	},
-	"keywords": ["nepali-calendar", "nepali-business-calendar"],
+	"keywords": [
+		"nepali-calendar",
+		"nepali-business-calendar"
+	],
 	"homepage": "https://github.com/prashantchaulagain/corporate-nepali-calendar",
 	"bugs": {
 		"url": "https://github.com/prashantchaulagain/corporate-nepali-calendar"
@@ -24,7 +27,9 @@
 		"type": "git",
 		"url": "git+https://github.com/prashantchaulagain/corporate-nepali-calendar.git"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"license": "MIT",
 	"devDependencies": {
