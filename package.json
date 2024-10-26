@@ -1,0 +1,37 @@
+{
+	"name": "corporate-nepali-calendar",
+	"version": "1.0.0",
+	"main": "dist/index.js",
+	"description": "Nepali Calendar utils with functions like date conversion with accurate date conversion from 2000 to 2099 B.S. ",
+	"scripts": {
+		"build": "tsc",
+		"format": "npx @biomejs/biome format --write .",
+		"check-format": "npx @biomejs/biome check",
+		"check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+		"test": "vitest run",
+		"dev": "vitest",
+		"local-release": "changeset version && changeset publish",
+		"prepublishOnly": "npm run ci",
+		"ci": "npm run build && npm run check-format && npm run check-exports && npm run test"
+	},
+	"keywords": ["nepali-calendar", "nepali-business-calendar"],
+	"homepage": "https://github.com/prashantchaulagain/corporate-nepali-calendar",
+	"bugs": {
+		"url": "https://github.com/prashantchaulagain/corporate-nepali-calendar"
+	},
+	"author": "Prashant Chaulagain <prashant@uxqode.co> (https://uxqode.co)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/prashantchaulagain/corporate-nepali-calendar.git"
+	},
+	"files": ["dist"],
+	"type": "module",
+	"license": "MIT",
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.16.4",
+		"@biomejs/biome": "1.9.4",
+		"@changesets/cli": "^2.27.9",
+		"typescript": "^5.6.3",
+		"vitest": "^2.1.3"
+	}
+}

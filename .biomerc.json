@@ -1,0 +1,13 @@
+{
+	"formatter": {
+		"enabled": true,
+		"options": {
+			"semi": true,
+			"singleQuote": true,
+			"trailingComma": "all",
+			"lineWidth": 80,
+			"indentStyle": "space",
+			"indentWidth": 2
+		}
+	}
+}
