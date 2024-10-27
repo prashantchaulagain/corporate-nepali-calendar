@@ -17,6 +17,7 @@
 
 		/* If transpiling with TypeScript: */
 		"module": "NodeNext",
+
 		"outDir": "dist",
 		"rootDir": "src",
 		"sourceMap": true,
@@ -27,5 +28,7 @@
 		/* AND if you're building for a library in a monorepo: */
 		"declarationMap": true,
 		"lib": ["es2022"]
-	}
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "tests"]
 }

@@ -14,10 +14,7 @@
 		"prepublishOnly": "npm run ci",
 		"ci": "npm run build && npm run check-format && npm run check-exports && npm run test"
 	},
-	"keywords": [
-		"nepali-calendar",
-		"nepali-business-calendar"
-	],
+	"keywords": ["nepali-calendar", "nepali-business-calendar"],
 	"homepage": "https://github.com/prashantchaulagain/corporate-nepali-calendar",
 	"bugs": {
 		"url": "https://github.com/prashantchaulagain/corporate-nepali-calendar"
@@ -27,9 +24,7 @@
 		"type": "git",
 		"url": "git+https://github.com/prashantchaulagain/corporate-nepali-calendar.git"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"type": "module",
 	"license": "MIT",
 	"devDependencies": {
