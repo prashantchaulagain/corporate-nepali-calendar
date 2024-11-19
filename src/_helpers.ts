@@ -27,7 +27,7 @@ export const isLeapYear = (year: number): boolean => {
 };
 
 export const getTimeZone = () =>
-	process.env.TZ || Intl.DateTimeFormat().resolvedOptions().timeZone;
+	process?.env?.TZ || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export const daysInAdMonth = (year: number, month: number): number => {
 	const daysInEachMonth: number[] = [
@@ -118,8 +118,11 @@ export const adToBsDateConversion = (
 	let bsMonth = bsStartMonth;
 	let bsDay = bsStartDay;
 
-	if (adStartYear < adYear) {
-		if (adStartMonth < adMonth && adStartDate < adDay) {
+	if (adStartYear >= adYear) {
+		if (
+			adStartMonth > adMonth ||
+			(adStartMonth === adMonth && adStartDate > adDay)
+		) {
 			throw new Error("AD year goes beyond the available range.");
 		}
 	}

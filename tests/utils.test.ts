@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import { afterEach, describe, expect, it, Mock, vi } from "vitest";
+import { afterEach, describe, expect, it, Mock, test, vi } from "vitest";
 import * as helpers from "../src/_helpers.js";
 import { convertToAd, convertToBs, getAdMonthRangeFromBsMonth, getDaysAdMonth, getDaysBsHalfYear, getDaysBsQuarter, getDaysBsYear, getBsMonthEndDate, getBsQuarterEndDate, getBsYearEndDate, getTodaysBsDate } from "../src/utils.js";
 
@@ -122,10 +122,25 @@ describe('getDaysBsYear', () => {
 describe('Date Conversion Tests', () => {
 	// Test convertToBs function
 	describe('convertToBs', () => {
-		it('should correctly convert a valid AD date string to BS date', () => {
-			const bsDate = convertToBs('2024-11-04T14:12:38.258Z');
-			expect(bsDate).toBe('2081-07-19'); // Adjust based on actual BS date
-		});
+        const testCases = [
+            { adDate: '2024-11-04T14:12:38.258Z', expectedBsDate: '2081-07-19' },
+            { adDate: '2024-11-04', expectedBsDate: '2081-07-19' },
+            { adDate: '2004-12-08', expectedBsDate: '2061-08-23' },
+            { adDate: '2012-09-02', expectedBsDate: '2069-05-17' },
+            { adDate: '1987-02-06', expectedBsDate: '2043-10-23' },
+            { adDate: '1943-04-20', expectedBsDate: '2000-01-07' },
+            { adDate: '2031-10-16', expectedBsDate: '2088-06-29' },
+            { adDate: '2003-09-18', expectedBsDate: '2060-06-01' },
+            { adDate: '2024-11-19', expectedBsDate: '2081-08-04' },
+          ];
+        
+          test.each(testCases)(
+            'should correctly convert a valid AD date string $adDate to BS date $expectedBsDate',
+            ({ adDate, expectedBsDate }) => {
+              const bsDate = convertToBs(adDate);
+              expect(bsDate).toBe(expectedBsDate);
+            }
+          );
 
 		it('should correctly convert a valid Date object to BS date', () => {
 			const bsDate = convertToBs(new Date('2024-11-04T14:12:38.258Z'));
@@ -138,6 +153,13 @@ describe('Date Conversion Tests', () => {
 			);
 		});
 
+        it('should throw an error for an invalid date string', () => {
+			expect(() => convertToBs('1943-01-01')).toThrow(
+				'AD year goes beyond the available range.'
+			);
+		});
+
+
 		it('should throw an error for an undefined date string', () => {
 			expect(() => convertToBs('')).toThrow('Invalid date: Please provide a valid date.');
 		});
@@ -147,7 +169,22 @@ describe('Date Conversion Tests', () => {
 	describe('convertToAd', () => {
 		it('should correctly convert a valid BS date string to AD date', () => {
 			const adDate = convertToAd('2081-07-19');
-			expect(adDate).toBe('2024-11-04'); // Adjust based on actual AD date
+			expect(adDate).toBe('2024-11-04');
+		});
+
+        it('should correctly convert a valid BS date string to AD date', () => {
+			const adDate = convertToAd('2011-09-06');
+			expect(adDate).toBe('1954-12-21');
+		});
+
+        it('should correctly convert a valid BS date string to AD date', () => {
+			const adDate = convertToAd('2018-11-23');
+			expect(adDate).toBe('1962-03-06');
+		});
+
+        it('should correctly convert a valid BS date string to AD date', () => {
+			const adDate = convertToAd('2027-07-07');
+			expect(adDate).toBe('1970-10-23');
 		});
 
 		it('should throw an error for an invalid BS date string', () => {
