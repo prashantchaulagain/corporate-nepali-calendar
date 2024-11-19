@@ -1,5 +1,11 @@
 # corporate-nepali-calendar
 
+## 1.2.1
+
+### Patch Changes
+
+- 261c1ab: Fixed issues: AD year out of range and process not defined
+
 ## 1.2.0
 
 ### Minor Changes
