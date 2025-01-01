@@ -30,3 +30,16 @@ export type AdMonthRange = {
 	monthStartDate: string;
 	monthEndDate: string;
 };
+
+export type AccountingYearType = "financial" | "calendar";
+
+export type CalendarSystem = "ad" | "bs";
+
+export type PaymentFrequency = "year" | "half-year" | "quarter" | "month";
+
+export type GlobalConfig = {
+	accountingYearType: AccountingYearType;
+	calendarSystem: CalendarSystem;
+};
+
+export type BSDate = `${number}-${string}-${string}`;

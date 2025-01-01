@@ -30,8 +30,8 @@ describe('Date Conversion Tests', () => {
 		});
 
 		it('should throw an error if BS date is out of bounds', () => {
-			expect(() => bsToAdDateConversion(2100, 1, 1)).toThrow(
-				'BS year exceeds the available range (2000-2099).'
+			expect(() => bsToAdDateConversion(2101, 1, 1)).toThrow(
+				'BS year exceeds the available range (1992-2100).'
 			);
 		});
 	});

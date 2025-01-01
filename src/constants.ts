@@ -1,6 +1,14 @@
-import type { YearlyBsDays } from "./types.js";
+import type { GlobalConfig, YearlyBsDays } from "./types.js";
 
 export const DAYS_BS_MONTHS: YearlyBsDays = {
+	1992: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+	1993: [31, 31, 31, 32, 31, 31, 30, 29, 30, 29, 30, 30],
+	1994: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+	1995: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 30],
+	1996: [31, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
+	1997: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+	1998: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
+	1999: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
 	2000: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
 	2001: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
 	2002: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
@@ -104,9 +112,9 @@ export const DAYS_BS_MONTHS: YearlyBsDays = {
 	2100: [31, 32, 31, 32, 30, 31, 30, 29, 30, 29, 30, 30],
 };
 
-export const BS_START_YEAR = 2000;
-export const AD_START_YEAR = 1943;
+export const BS_START_YEAR = 1992;
 export const BS_START_MONTH = 1;
 export const BS_START_DATE = 1;
+export const AD_START_YEAR = 1935;
 export const AD_START_MONTH = 4;
-export const AD_START_DATE = 14;
+export const AD_START_DATE = 13;

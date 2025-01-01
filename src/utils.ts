@@ -4,10 +4,47 @@ import {
 	dateDifference,
 	daysInAdMonth,
 	formatDate,
+	getDaysArray,
+	getDivisionFactor,
+	getPeriod,
 	getTimeZone,
+	isValidBSDate,
+	nextPeriod,
+	parseBSDate,
+	validateMonth,
+	validateYear,
 } from "./_helpers.js";
-import { DAYS_BS_MONTHS } from "./constants.js";
-import type { AdMonthRange } from "./types.js";
+import type {
+	AccountingYearType,
+	AdMonthRange,
+	BSDate,
+	GlobalConfig,
+	PaymentFrequency,
+} from "./types.js";
+
+// Default configuration
+export const globalConfig: GlobalConfig = {
+	accountingYearType: "calendar",
+	calendarSystem: "bs",
+};
+
+export const setGlobalConfig = (config: Partial<GlobalConfig>) => {
+	if (config.accountingYearType) {
+		if (!["financial", "calendar"].includes(config.accountingYearType)) {
+			throw new Error(
+				"Invalid accountingYearType. Use 'financial' or 'calendar'.",
+			);
+		}
+		globalConfig.accountingYearType = config.accountingYearType;
+	}
+
+	if (config.calendarSystem) {
+		if (!["AD", "BS"].includes(config.calendarSystem)) {
+			throw new Error("Invalid calendarSystem. Use 'AD' or 'BS'.");
+		}
+		globalConfig.calendarSystem = config.calendarSystem;
+	}
+};
 
 export const getDaysAdMonth = (year: number, month: number): number => {
 	if (month < 1 || month > 12) {
@@ -22,38 +59,28 @@ export const getDaysAdMonth = (year: number, month: number): number => {
 	return days;
 };
 
-export const getDaysBsMonth = (year: number, month: number): number => {
-	if (year < 2000 || year > 2099) {
-		throw new Error(
-			"Invalid year: Please provide a year between 2000 and 2099.",
-		);
-	}
+export const getDaysBsMonth = (
+	year: number,
+	month: number,
+	accountingYearType?: AccountingYearType,
+): number => {
+	validateYear(year);
+	validateMonth(month);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
-	if (month < 1 || month > 12) {
-		throw new Error("Invalid month: Please provide a month between 1 and 12.");
-	}
-
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
-
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
-	}
-
-	const days = daysInEachMonth[month - 1];
-	if (days === undefined) {
-		throw new Error("Unexpected error: Month index out of bounds.");
-	}
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
+	const days = daysInEachMonth[month - 1] || 30;
 
 	return days;
 };
 
-export const getDaysBsQuarter = (year: number, quarter: number): number => {
-	if (year < 2000 || year > 2099) {
-		throw new Error(
-			"Invalid year: Please provide a year between 2000 and 2099.",
-		);
-	}
+export const getDaysBsQuarter = (
+	year: number,
+	quarter: number,
+	accountingYearType?: AccountingYearType,
+): number => {
+	validateYear(year);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
 	if (quarter < 1 || quarter > 4) {
 		throw new Error(
@@ -61,12 +88,7 @@ export const getDaysBsQuarter = (year: number, quarter: number): number => {
 		);
 	}
 
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
-
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
-	}
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
 
 	// Calculate the starting index for the quarter
 	const startIndex = (quarter - 1) * 3;
@@ -79,24 +101,21 @@ export const getDaysBsQuarter = (year: number, quarter: number): number => {
 	return quarterDays;
 };
 
-export const getDaysBsHalfYear = (year: number, half: number): number => {
-	if (year < 2000 || year > 2099) {
-		throw new Error(
-			"Invalid year: Please provide a year between 2000 and 2099.",
-		);
-	}
+export const getDaysBsHalfYear = (
+	year: number,
+	half: number,
+	accountingYearType?: AccountingYearType,
+): number => {
+	validateYear(year);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
 	if (half !== 1 && half !== 2) {
 		throw new Error("Invalid half: Please provide a half of either 1 or 2.");
 	}
 
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
 
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
-	}
-
+	// Calculate the starting index for the half-year
 	const startIndex = (half - 1) * 6;
 
 	const halfYearDays = daysInEachMonth
@@ -106,48 +125,47 @@ export const getDaysBsHalfYear = (year: number, half: number): number => {
 	return halfYearDays;
 };
 
-export const getDaysBsYear = (year: number): number => {
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
+export const getDaysBsYear = (
+	year: number,
+	accountingYearType?: AccountingYearType,
+): number => {
+	validateYear(year);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
-	}
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
 
 	const yearDays = daysInEachMonth.reduce((total, days) => total + days, 0);
 
 	return yearDays;
 };
 
-export const getBsMonthEndDate = (year: number, month: number): string => {
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
+export const getBsMonthEndDate = (
+	year: number,
+	month: number,
+	accountingYearType?: AccountingYearType,
+): string => {
+	validateYear(year);
+	validateMonth(month);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
-	if (month < 1 || month > 12) {
-		throw new Error("Invalid month: Please provide a month between 1 and 12.");
-	}
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
 
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
-	}
-	const days = daysInEachMonth[month - 1];
-
-	if (days === undefined) {
-		throw new Error("Unexpected error: Month index out of bounds.");
-	}
+	const days = daysInEachMonth[month - 1] || 30;
 
 	const endDate = formatDate({ year: year, month: month, day: days });
 
 	return endDate;
 };
 
-export const getBsQuarterEndDate = (year: number, quarter: number): string => {
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
+export const getBsQuarterEndDate = (
+	year: number,
+	quarter: number,
+	accountingYearType?: AccountingYearType,
+): string => {
+	validateYear(year);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
-	}
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
 
 	if (quarter < 1 || quarter > 4) {
 		throw new Error(
@@ -155,37 +173,74 @@ export const getBsQuarterEndDate = (year: number, quarter: number): string => {
 		);
 	}
 
-	const days = daysInEachMonth[quarter * 3 - 1];
+	const days = daysInEachMonth[quarter * 3 - 1] || 30;
+	let adjustedYear = year;
+	let adjustedMonth = quarter * 3;
 
-	if (days === undefined) {
-		throw new Error("Unexpected error: Month index out of bounds.");
+	if (accountingYear === "financial") {
+		adjustedYear = quarter === 4 ? year + 1 : year;
+		adjustedMonth = ((quarter % 4) + 1) * 3;
 	}
 
-	const endDate = formatDate({ year: year, month: quarter * 3, day: days });
+	const endDate = formatDate({
+		year: adjustedYear,
+		month: adjustedMonth,
+		day: days,
+	});
 
 	return endDate;
 };
 
-export const getBsYearEndDate = (year: number): string => {
-	const daysInEachMonth: number[] | undefined = DAYS_BS_MONTHS[year];
+export const getBsHalfYearEndDate = (
+	year: number,
+	half: number,
+	accountingYearType?: AccountingYearType,
+): string => {
+	validateYear(year);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
 
-	// Check if the year is found in DAYS_BS_MONTHS
-	if (!daysInEachMonth) {
-		throw new Error("Year not found in DAYS_BS_MONTHS.");
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
+
+	if (half !== 1 && half !== 2) {
+		throw new Error("Invalid half: Please provide a half of either 1 or 2.");
 	}
 
-	const days = daysInEachMonth[11];
+	const days = daysInEachMonth[half * 6 - 1] || 30;
 
-	if (days === undefined) {
-		throw new Error("Unexpected error: Month index out of bounds.");
+	let adjustedYear = year;
+	let adjustedMonth = half * 6;
+	if (accountingYear === "financial") {
+		adjustedMonth = adjustedMonth + 3;
+		adjustedYear = adjustedMonth > 12 ? year + 1 : year;
+		adjustedMonth = adjustedMonth % 12;
 	}
+
+	const endDate = formatDate({
+		year: adjustedYear,
+		month: adjustedMonth,
+		day: days,
+	});
+
+	return endDate;
+};
+
+export const getBsYearEndDate = (
+	year: number,
+	accountingYearType?: AccountingYearType,
+): string => {
+	validateYear(year);
+	const accountingYear = accountingYearType || globalConfig.accountingYearType;
+
+	const daysInEachMonth: number[] = getDaysArray(year, accountingYear);
+
+	const days = daysInEachMonth[11] || 30;
 
 	const endDate = formatDate({ year: year, month: 12, day: days });
 
 	return endDate;
 };
 
-export const convertToBs = (date: string | Date): string => {
+export const convertToBs = (date: string | Date): BSDate => {
 	// Ensure the input is a valid date and convert to 'YYYY-MM-DD' format
 	const dateString = (date instanceof Date ? date.toISOString() : date).split(
 		"T",
@@ -211,7 +266,7 @@ export const convertToBs = (date: string | Date): string => {
 	);
 
 	// Return the formatted BS date using the formatDate function
-	return formatDate({ year: bsYear, month: bsMonth, day: bsDay });
+	return formatDate({ year: bsYear, month: bsMonth, day: bsDay }) as BSDate;
 };
 
 export const convertToAd = (date: string | Date): string => {
@@ -242,15 +297,15 @@ export const convertToAd = (date: string | Date): string => {
 
 export const getDaysDifferenceBsDates = ({
 	startDate,
-	EndDate,
+	endDate,
 	includeEndDate = false,
 }: {
 	startDate: string;
-	EndDate: string;
+	endDate: string;
 	includeEndDate?: boolean;
 }): number => {
 	const start = new Date(convertToAd(startDate));
-	const end = new Date(convertToAd(EndDate));
+	const end = new Date(convertToAd(endDate));
 	const daysDifference = dateDifference(start, end);
 	let days = daysDifference.days;
 	if (includeEndDate) {
@@ -277,7 +332,7 @@ export const getAdMonthRangeFromBsMonth = (
 	};
 };
 
-export const getTodaysBsDate = (): string => {
+export const getTodaysBsDate = (): BSDate => {
 	const timeZone = getTimeZone();
 	const formatter = new Intl.DateTimeFormat("en-GB", {
 		timeZone,
@@ -295,4 +350,91 @@ export const getTodaysBsDate = (): string => {
 	const formattedDate = `${year}-${month}-${day}`;
 	const todayBs = convertToBs(formattedDate);
 	return todayBs;
+};
+
+export const getPeriodEndDatesBs = ({
+	startDate,
+	endDate,
+	periodType,
+	yearType = "calendar",
+}: {
+	startDate: string;
+	endDate: string;
+	periodType: PaymentFrequency;
+	yearType?: AccountingYearType;
+}) => {
+	const periodEndFunction =
+		periodType === "quarter" ? getBsQuarterEndDate : getBsHalfYearEndDate;
+
+	// Initialize the array of end dates
+	const endDates = [startDate];
+	let currentPeriod = getPeriod({
+		dateString: startDate,
+		periodType,
+		yearType,
+	});
+	let i = 0;
+
+	// Loop through periods, adding their end dates to the array
+	while (true) {
+		const periodEndDate = periodEndFunction(
+			currentPeriod.year,
+			currentPeriod.quarter ?? currentPeriod.halfYear,
+			yearType,
+		);
+
+		// Check if the next period has crossed the endDate
+		if (periodEndDate > endDate) {
+			// Add the endDate itself if it's not included yet
+			if (!endDates.includes(endDate)) {
+				endDates.push(endDate);
+			}
+			break;
+		}
+		endDates.push(periodEndDate);
+
+		const nextPeriodData = nextPeriod({
+			dateString: periodEndDate,
+			periodType,
+			yearType,
+		});
+
+		const nextPeriodEndDate = periodEndFunction(
+			nextPeriodData.year,
+			nextPeriodData.quarter ?? nextPeriodData.halfYear,
+			yearType,
+		);
+
+		// If the next period end date crosses the end date, stop iteration
+		if (nextPeriodEndDate > endDate) {
+			endDates.push(endDate);
+			break;
+		}
+		currentPeriod = nextPeriodData;
+		i++;
+	}
+
+	return endDates;
+};
+
+export const getPeriodEndDatesAd = ({
+	startDate,
+	endDate,
+	periodType,
+	yearType = "calendar",
+}: {
+	startDate: string;
+	endDate: string;
+	periodType: PaymentFrequency;
+	yearType?: AccountingYearType;
+}) => {
+	const bsDatesArray = getPeriodEndDatesBs({
+		startDate,
+		endDate,
+		periodType,
+		yearType,
+	});
+	const adDates = bsDatesArray.map((date: string) => convertToAd(date));
+
+	return adDates;
 };

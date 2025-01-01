@@ -12,4 +12,6 @@ export {
 	getDaysDifferenceBsDates,
 	getAdMonthRangeFromBsMonth,
 	getTodaysBsDate,
+	getPeriodEndDatesBs,
+	getPeriodEndDatesAd,
 } from "./utils.js";
