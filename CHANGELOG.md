@@ -1,5 +1,12 @@
 # corporate-nepali-calendar
 
+## 1.3.0
+
+### Minor Changes
+
+- f12b093: Added new functions to get period end dates
+- fe4ff65: Added new functions to get end dates of quarter and half-years in array
+
 ## 1.2.1
 
 ### Patch Changes
