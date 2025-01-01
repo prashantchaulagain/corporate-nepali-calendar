@@ -178,6 +178,34 @@ Returns today's date in the Nepali (BS) calendar.
 
 ---
 
+### `getPeriodEndDatesBs({ startDate: string, endDate: string, periodType: string, yearType?: string}): array<string>`
+
+Returns array of dates of period ends based on input from start date or end date
+
+- **Parameters**:
+  - `startDate` - The BS date in format 'YYYY-MM-DD'
+  - `endDate` - The BS date in format 'YYYY-MM-DD'
+  - `periodType` - quarter or half-year
+  - `yearType` - calendar or financial. This is optional, by default it is set to calendar in functonal scope, with ability to set it globally.
+
+- **Returns**: The array of string of BS date  in `YYYY-MM-DD` format with the period end dates starting from startDate and ending with endDate.
+
+---
+
+### `getPeriodEndDatesAd({ startDate: string, endDate: string, periodType: string, yearType?: string}): array<string>`
+
+Returns array of dates of period ends based on input from start date or end date
+
+- **Parameters**:
+  - `startDate` - The BS date in format 'YYYY-MM-DD'
+  - `endDate` - The BS date in format 'YYYY-MM-DD'
+  - `periodType` - quarter or half-year
+  - `yearType` - calendar or financial. This is optional, by default it is set to calendar in functonal scope, with ability to set it globally.
+
+- **Returns**: The array of string of AD date in `YYYY-MM-DD` format with the period end dates starting from startDate converted to AD and ending with endDate converted to AD.
+
+---
+
 ## **⭐️ Give a Star on GitHub!**
 
 If you find this project helpful, please consider giving it a ⭐️ on [GitHub](https://github.com/prashantchaulagain/corporate-nepali-calendar). Your support helps others discover this library and motivates us to keep improving it.
